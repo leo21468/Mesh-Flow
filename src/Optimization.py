@@ -51,7 +51,7 @@ def offline_optimize_path(c, iterations=100, window_size=6):
     bar.close()
     return p
 
-def real_time_optimize_path(c, buffer_size=200, iterations=10, window_size=32, beta=1):
+def real_time_optimize_path(c, buffer_size=200, iterations=10, window_size=50, beta=1):
     """
     @param: c is camera trajectory within the buffer
 
@@ -59,7 +59,9 @@ def real_time_optimize_path(c, buffer_size=200, iterations=10, window_size=32, b
         returns an realtime optimized smooth camera trajectory
     """
 
-    lambda_t = 100
+    # Increased lambda_t (100 -> 200) for stronger temporal smoothing to suppress
+    # fast horizontal panning and vertical shake common in handheld dental/oral videos.
+    lambda_t = 200
     p = np.empty_like(c)
     
     W = np.zeros((buffer_size, buffer_size))

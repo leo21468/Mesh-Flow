@@ -42,8 +42,10 @@ def read_video(cap):
                         blockSize = 7 )
 
     # Parameters for lucas kanade optical flow
-    lk_params = dict( winSize  = (15, 15),
-                    maxLevel = 2,
+    # Enlarged winSize (25x25) and maxLevel (3) improve tracking of fast lateral
+    # panning and vertical shake typical in handheld dental/oral recordings.
+    lk_params = dict( winSize  = (25, 25),
+                    maxLevel = 3,
                     criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 20, 0.03))
 
     # Take first frame
@@ -53,11 +55,13 @@ def read_video(cap):
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     # preserve aspect ratio
+    # Increased border (30 -> 50) to accommodate the larger warp corrections
+    # needed when suppressing fast panning in dental/oral videos.
     global HORIZONTAL_BORDER
-    HORIZONTAL_BORDER = 30
+    HORIZONTAL_BORDER = 50
 
     global VERTICAL_BORDER
-    VERTICAL_BORDER = (HORIZONTAL_BORDER*old_gray.shape[1])/old_gray.shape[0]
+    VERTICAL_BORDER = int((HORIZONTAL_BORDER*old_gray.shape[1])/old_gray.shape[0])
 
     # motion meshes in x-direction and y-direction
     x_motion_meshes = []; y_motion_meshes = []
